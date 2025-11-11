@@ -1,0 +1,121 @@
+"""
+QUICK START GUIDE
+=================
+
+INSTALLATION:
+  uv sync
+
+RUN TASK 1:
+  uv run python main.py
+  
+  Expected output: Sweep completes in ~2.8 minutes (167.7 seconds)
+
+RUN EXPERIMENTS:
+  uv run python experiments.py
+  
+  Shows:
+  - Strategy comparison (nearest-first, priority-based, systematic)
+  - Expertise level impact (novice, intermediate, expert, veteran)
+
+RUN ADVANCED SCENARIOS:
+  uv run python advanced_scenarios.py
+  
+  Shows:
+  - Smoke scenario (priority-based vs nearest-first)
+  - Large building with multiple wings
+  - Different responder counts
+
+CUSTOMIZE A SIMULATION:
+-----------------------
+
+from building import Building
+from room import Room, RoomType, OccupantType
+from responder import Responder, SweepStrategy, ExpertiseLevel
+from simulation import SweepSimulation
+
+# 1. Create a building
+building = Building("My Building")
+
+# 2. Add rooms
+exit1 = Room("Exit1", area=5.0, room_type=RoomType.EXIT)
+office1 = Room("Office1", area=30.0, room_type=RoomType.OFFICE, 
+               occupant_type=OccupantType.NORMAL, has_smoke=False)
+
+building.add_room(exit1)
+building.add_room(office1)
+
+# 3. Connect rooms with hallways
+building.add_hallway("Exit1", "Office1", distance=10.0)
+
+# 4. Create responders
+firefighter = Responder(
+    "FF1", "Firefighter 1",
+    strategy=SweepStrategy.NEAREST_FIRST,
+    expertise=ExpertiseLevel.EXPERT
+)
+
+# 5. Run simulation
+simulation = SweepSimulation(building, [firefighter])
+simulation.assign_starting_positions({"FF1": "Exit1"})
+results = simulation.run_simulation()
+
+# 6. View results
+simulation.print_summary(results)
+
+KEY PARAMETERS:
+--------------
+
+Room Types:
+  - RoomType.OFFICE
+  - RoomType.CONFERENCE
+  - RoomType.STORAGE
+  - RoomType.RESTROOM
+  - RoomType.HALLWAY
+  - RoomType.EXIT
+
+Occupant Types:
+  - OccupantType.NONE
+  - OccupantType.NORMAL
+  - OccupantType.LOW_MOBILITY
+  - OccupantType.HIGH_DENSITY
+
+Sweep Strategies:
+  - SweepStrategy.NEAREST_FIRST (fastest for simple layouts)
+  - SweepStrategy.SYSTEMATIC (consistent, predictable)
+  - SweepStrategy.PRIORITY_BASED (best for smoke/occupancy variance)
+
+Expertise Levels:
+  - ExpertiseLevel.NOVICE (0.7x speed)
+  - ExpertiseLevel.INTERMEDIATE (1.0x speed)
+  - ExpertiseLevel.EXPERT (1.3x speed)
+  - ExpertiseLevel.VETERAN (1.5x speed)
+
+RESULTS INTERPRETATION:
+----------------------
+
+results = {
+    'completion_time': 167.7,              # Total time in seconds
+    'completion_time_minutes': 2.8,        # Total time in minutes
+    'fully_swept': True,                   # All rooms swept?
+    'building_stats': {...},               # Building statistics
+    'responder_stats': [{...}, ...],       # Per-responder stats
+    'events': [(...), ...]                 # Timeline of events
+}
+
+TROUBLESHOOTING:
+---------------
+
+Q: Simulation takes too long?
+A: Check max_iterations parameter or ensure all rooms are reachable
+
+Q: Want to see detailed timeline?
+A: Access results['events'] for full event log
+
+Q: How to export results?
+A: from visualization import export_results_json
+   export_results_json(results, "my_results.json")
+
+Q: How to visualize building?
+A: from visualization import visualize_building_ascii
+   print(visualize_building_ascii(building))
+"""
